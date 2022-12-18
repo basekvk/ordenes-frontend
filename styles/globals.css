@@ -14,6 +14,22 @@ a {
 * {
   box-sizing: border-box;
 }
+/*Centrar en pantalla */
+body {
+  padding: 20px;
+  margin: 0 auto;
+}
+h1 {
+  width: 100%;
+  font-size: 3rem;
+  font-weight: 900;
+  margin: 0;
+  line-height: 1.15;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
 
 @media (prefers-color-scheme: dark) {
   html {
