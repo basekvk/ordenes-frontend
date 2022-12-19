@@ -1,102 +1,144 @@
-function NewOrder() {
+"use client";
+import { Form, Button } from "semantic-ui-react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import React, { useState } from "react";
+import {createOrdersAPI} from '../../api/orders';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+export default function OrderForm() {
+  const [loading, setLoading] = useState(false);
+
+  const formik = useFormik({
+    initialValues: initialValues(),
+    validationSchema: Yup.object(validationSchema()),
+    onSubmit: (formData) => {
+      createOrder(formData);
+    },
+  });
+
+  const createOrder = async (formData) => {
+    setLoading(true);
+    console.log(formData);
+    const response = await createOrdersAPI(formData);
+    if(!response){
+        toast.warning("Error al crear la orden")
+        setLoading(false);
+    }else{
+        toast.success("Orden creada correctamente")
+        formik.resetForm();
+        setLoading(false);
+    }
+    
+  };
+  
+
   return (
     <div className="container">
-    <h1 className="text-center">NUEVA ORDEN</h1>
-    <form>
-      <div className="mb-3">
-        <label htmlFor="exampleInputEmail1" className="form-label">
-          CLIENTE
-        </label>
-        <input
-          type="text"
-          className="form-control"
-          id="exampleInputEmail1"
-          aria-describedby="emailHelp"
-        />
-        <div id="emailHelp" className="form-text">
-          
+      <h1 className="text-center">NUEVA ORDEN</h1>
+      <Form onSubmit={formik.handleSubmit}>
+        <div className="mb-3">
+          <Form.Input
+            className="form-control"
+            name="name"
+            type="text"
+            label="CLIENTE"
+            onChange={formik.handleChange}
+            value={formik.values.name}
+            error={formik.errors.name}
+          />
         </div>
-      </div>
-      <div className="mb-3">
-        <label htmlFor="exampleInputEmail1" className="form-label">
-          DOMICILIO
-        </label>
-        <input
-          type="text"
-          className="form-control"
-          id="exampleInputEmail1"
-          aria-describedby="emailHelp"
-        />
-        <div id="emailHelp" className="form-text">
-         
+        <Form.Group widths="equal">
+          <div className="mb-3">
+            <Form.Input
+              className="form-control"
+              name="domicilio"
+              type="text"
+              label="DOMICILIO"
+              onChange={formik.handleChange}
+              value={formik.values.domicilio}
+              error={formik.errors.domicilio}
+            />
+          </div>
+          <div className="mb-3">
+            <Form.Input
+              className="form-control"
+              name="telefono"
+              type="number"
+              label="TELEFONO"
+              onChange={formik.handleChange}
+              value={formik.values.telefono}
+              error={formik.errors.telefono}
+            />
+          </div>
+          <div className="mb-3">
+            <Form.Input
+              className="form-control"
+              name="fecha"
+              type="date"
+              label="FECHA"
+              onChange={formik.handleChange}
+              value={formik.values.fecha}
+              error={formik.errors.fecha}
+            />
+          </div>
+          <div className="mb-3">
+            <Form.Input
+              className="form-control"
+              name="trabajos"
+              type="text"
+              label="TRABAJOS A REALIZAR"
+              onChange={formik.handleChange}
+              value={formik.values.trabajos}
+              error={formik.errors.trabajos}
+            />
+          </div>
+          <div className="mb-3">
+            <Form.Input
+              className="form-control"
+              name="observaciones"
+              type="text"
+              label="OBSERVACIONES"
+              onChange={formik.handleChange}
+              value={formik.values.observaciones}
+              error={formik.errors.observaciones}
+            />
+          </div>
+        </Form.Group>
+        <div className="form-group">
+          <Button
+            className="btn btn-primary mt-3"
+            type="submit"
+            loading={loading}
+          >
+            Crear
+          </Button>
         </div>
-      </div>
-      <div className="mb-3">
-        <label htmlFor="exampleInputEmail1" className="form-label">
-          TELEFONO
-        </label>
-        <input
-          type="number"
-          className="form-control"
-          id="exampleInputEmail1"
-          aria-describedby="emailHelp"
-        />
-        <div id="emailHelp" className="form-text">
-          
-        </div>
-      </div>
-      <div className="mb-3">
-        <label htmlFor="exampleInputEmail1" className="form-label">
-          FECHA
-        </label>
-        <input
-          type="date"
-          className="form-control"
-          id="exampleInputEmail1"
-          aria-describedby="emailHelp"
-        />
-        <div id="emailHelp" className="form-text">
-          
-        </div>
-      </div>
-      <div className="mb-3">
-        <label htmlFor="exampleInputPassword1" className="form-label">
-          TRABAJOS A REALIZAR
-        </label>
-        <textarea
-
-          type="text"
-          className="form-control"
-          id="exampleInputPassword1"
-        />
-      </div>
-      <div className="mb-3">
-        <label htmlFor="exampleInputPassword1" className="form-label">
-          OBSERVACIONES
-        </label>
-        <textarea
-          type="text"
-          className="form-control"
-          id="exampleInputPassword1"
-        />
-      </div>
-      <div className="mb-3">
-        <label htmlFor="exampleInputPassword1" className="form-label">
-          ESTADO
-        </label>
-        <select className="form-select" aria-label="Default select example">
-          <option selected>Seleccionar</option>
-          <option value={1}>POR REALIZAR</option>
-          <option value={2}>EN PROCESO</option>
-          <option value={3}>TERMINADO</option>
-        </select>
-      </div>
-      <button type="submit" className="btn btn-primary">
-        ENVIAR
-      </button>
-    </form>
-  </div>
+      </Form>
+    </div>
   );
 }
 
-export default NewOrder;
+function initialValues() {
+  return {
+    name: "",
+    domicilio: "",
+    telefono: "",
+    fecha: "",
+    trabajos: "",
+    observaciones: "",
+    
+  };
+}
+function validationSchema() {
+  return {
+    name: Yup.string().required(),
+    domicilio: Yup.string().required(),
+    telefono: Yup.number().required(),
+    fecha: Yup.date().required(),
+    trabajos: Yup.string().required(),
+    observaciones: Yup.string(),
+    
+  };
+}
